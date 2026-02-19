@@ -2,24 +2,31 @@ name: Joke Action
 run-name: Dad Joke for issue ${{ github.event.issue.number }} by ${{ github.event.comment.user.login }}
 
 on:
- issue_comment:
-   types: [created]
+  issue_comment:
+    types: [created]   # Trigger when a new comment is created
 
 permissions:
- issues: write
- contents: read
+  issues: write
+  contents: read
 
 jobs:
   joke:
+    # -------------------------------------
+    # Only run when the comment starts with /joke
+    # -------------------------------------
     if: startsWith(github.event.comment.body, '/joke')
+
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v5
+
       - name: Get Joke
         id: get-joke
         uses: ./
+
       - name: Create comment
         uses: peter-evans/create-or-update-comment@v5
         with:
-         issue-number: ${{ github.event.issue.number }}
-         body: ${{ steps.get-joke.outputs.joke }}
+          issue-number: ${{ github.event.issue.number }}
+          body: ${{ steps.get-joke.outputs.joke }}
